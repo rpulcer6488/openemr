@@ -323,14 +323,7 @@ function printlog_before_print() {
 <body bgcolor='#ffffff'>
 <form name='theform' method='post' action='printed_fee_sheet.php?fill=" . attr($form_fill) . "'
 onsubmit='return opener.top.restoreSession()'>
-<center>";
-
-// Set Pagebreak for multi forms
-if ($form_fill == 2) {
-    $html .= "<div class=pagebreak>\n";
-} else {
-    $html .= "<div>\n";
-}
+<div style='text-align: center;'>";
 
 $today = date('Y-m-d');
 
@@ -361,6 +354,14 @@ if (is_file("$webserver_root/$ma_logo_path")) {
 $saved_pages = $pages; //Save calculated page count of a single fee sheet
 
 foreach ($pid_list as $pid) {
+
+    // Set Pagebreak for multi forms
+    if ($form_fill == 2) {
+        $html .= "<div class=pagebreak>\n";
+    } else {
+        $html .= "<div>\n";
+    }
+
     if ($form_fill) {
         // Get the patient's name and chart number.
         $patdata = getPatientData($pid);
@@ -584,8 +585,8 @@ if ($form_fill != 2) {   //use native browser 'print' for multipage
 }
 
 $html .= "
+</div>
 </form>
-</center>
 </body>
 </html>";
 
