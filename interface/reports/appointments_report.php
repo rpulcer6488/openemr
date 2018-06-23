@@ -401,10 +401,12 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
 
     $appointments = sortAppointments($appointments, $form_orderby);
     $pid_list = array();  // Initialize list of PIDs for Superbill option
+    $apptdate_list = array();
     $totalAppontments = count($appointments);
 
     foreach ($appointments as $appointment) {
-                array_push($pid_list, $appointment['pid']);
+        array_push($pid_list, $appointment['pid']);
+        array_push($apptdate_list, $appointment['pc_eventDate']);
         $patient_id = $appointment['pid'];
         $docname  = $appointment['ulname'] . ', ' . $appointment['ufname'] . ' ' . $appointment['umname'];
 
@@ -480,7 +482,8 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
     }
 
     // assign the session key with the $pid_list array - note array might be empty -- handle on the printed_fee_sheet.php page.
-        $_SESSION['pidList'] = $pid_list;
+    $_SESSION['pidList'] = $pid_list;
+    $_SESSION['apptdateList'] = $apptdate_list;
     ?>
     <tr>
         <td colspan="10" align="left"><?php echo xlt('Total number of appointments'); ?>:&nbsp;<?php echo text($totalAppontments);?></td>

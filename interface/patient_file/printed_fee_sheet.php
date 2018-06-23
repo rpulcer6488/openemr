@@ -14,6 +14,8 @@ require_once("../globals.php");
 require_once("$srcdir/acl.inc");
 require_once("$srcdir/patient.inc");
 require_once("$srcdir/billing.inc");
+// For CMS-VT customization:
+require_once "$srcdir/appointments.inc.php";
 
 use OpenEMR\Services\FacilityService;
 
@@ -96,13 +98,19 @@ if (empty($_GET['fill'])) {
 
 // Show based on session array or single pid?
 $pid_list = array();
+// For CMS-VT customization:
+$apptdate_list = array();
 
 if (!empty($_SESSION['pidList']) and $form_fill == 2) {
+    // If PID list is in Session, then Appt. Date list is expected to be a parallel array
     $pid_list = $_SESSION['pidList'];
+    $apptdate_list = $_SESSION['apptdateList'];
 } else if ($form_fill == 1) {
     array_push($pid_list, $pid); //get from active PID
+    array_push($apptdate_list, $today); // default to today
 } else {
     array_push($pid_list, ''); // empty element for blank form
+    array_push($apptdate_list, $today); // default to today
 }
 
 // This file is optional. You can create it to customize how the printed
@@ -352,8 +360,14 @@ if (is_file("$webserver_root/$ma_logo_path")) {
 
 // Loop on array of PIDS
 $saved_pages = $pages; //Save calculated page count of a single fee sheet
+// For CMS-VT customization:
+$loop_idx = 0;
 
 foreach ($pid_list as $pid) {
+
+    // For CMS-VT customization:
+    $apptdate = $apptdate_list[$loop_idx]; // parallel array to pid_list
+    $appointment = fetchAppointments( $apptdate, $apptdate, $patient_id=$pid )[0];  // Only expecting one row [0] for pid 
 
     // Set Pagebreak for multi forms
     if ($form_fill == 2) {
@@ -372,6 +386,10 @@ foreach ($pid_list as $pid) {
 
     while (--$pages >= 0) {
         $html .= genFacilityTitle(xl('Superbill/Fee Sheet'), -1, $logo);
+
+        $html .= '<span style="font-weight: bold;">Patient: ' . 
+                 $patdata['fname'] . ' ' . $patdata['mname'] . ' ' . $patdata['lname'] .
+                 '&nbsp;&nbsp;DOB: ' . $patdata['DOB'] . '</span>';
 
         $html .="
 <table class='bordertbl' cellspacing='0' cellpadding='0' width='100%'>
@@ -406,6 +424,7 @@ foreach ($pid_list as $pid) {
 
             if ($form_fill) {
                 $html .= $patdata['DOB'];
+                $html .= "<br />";
             }
 
             $html .= xl('ID', 'r');
@@ -422,7 +441,10 @@ foreach ($pid_list as $pid) {
             $html .= xl('Doctor', 'r');
             $html .= ":<br />";
 
+
             $encdata = false;
+            // For CMS-VT customization: Commenting out SQL block below
+            /*
             if ($form_fill && $encounter) {
                 $query = "SELECT fe.reason, fe.date, u.fname, u.mname, u.lname, u.username " .
                         "FROM forms AS f " .
@@ -435,15 +457,26 @@ foreach ($pid_list as $pid) {
                     $html .= $encdata['fname'] . ' ' . $encdata['mname'] . ' ' . $encdata['lname'];
                 }
             }
+            */
+
+            // For CMS-VT customization: Get Doctor name from Appointment Provider, instead of from Encounter (commented out above)
+            if (!empty($appointment['uprovider_id'])) {
+                $html .= $appointment['ufname'] . ' ' . $appointment['umname'] . ' ' . $appointment['ulname'];
+            }
+            
 
             $html .= "</td>
 <td valign='top' class='fshead'>";
             $html .= xl('Reason', 'r');
             $html .= ":<br />";
 
-            if (!empty($encdata)) {
-                $html .= $encdata['reason'];
-            }
+            // For CMS-VT customization:
+            // if (!empty($encdata)) {
+            //     $html .= $encdata['reason'];
+            // }
+            // Note: You would think that pc_comments would have the Appt. comments,
+            // but it is actually stored in pc_hometext in DB table (openemr_postcalendar_events).
+            $html .= $appointment['pc_hometext'];
 
             $html .= "</td>
 </tr>
@@ -571,7 +604,9 @@ foreach ($pid_list as $pid) {
         $html .= "</div>";  //end of div.pageLetter
     } // end while
     $pages = $saved_pages; //RESET
-}
+    // For CMS-VT customization:
+    $loop_idx++;
+} // end foreach
 
 // Common End Code
 if ($form_fill != 2) {   //use native browser 'print' for multipage
