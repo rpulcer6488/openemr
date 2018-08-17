@@ -15,6 +15,7 @@ require_once("$srcdir/acl.inc");
 require_once("$srcdir/patient.inc");
 require_once("$srcdir/billing.inc");
 // For CMS-VT customization:
+require_once("$srcdir/user.inc");
 require_once "$srcdir/appointments.inc.php";
 
 use OpenEMR\Services\FacilityService;
@@ -379,6 +380,8 @@ foreach ($pid_list as $pid) {
     if ($form_fill) {
         // Get the patient's name and chart number.
         $patdata = getPatientData($pid);
+        // For CMS-VT customization:
+		$referDoc = getUserIDInfo($patdata['ref_providerID']);
     }
 
 // This tracks our position in the $SBCODES array.
@@ -387,9 +390,12 @@ foreach ($pid_list as $pid) {
     while (--$pages >= 0) {
         $html .= genFacilityTitle(xl('Superbill/Fee Sheet'), -1, $logo);
 
-        $html .= '<span style="font-weight: bold;">Patient: ' . 
-                 $patdata['fname'] . ' ' . $patdata['mname'] . ' ' . $patdata['lname'] .
-                 '&nbsp;&nbsp;DOB: ' . $patdata['DOB'] . '</span>';
+        $html .= '<table style="width: 100%"><tr>' .
+		'<td>Patient: <span style="font-weight: bold;">' . $patdata['fname'] . ' ' . $patdata['mname'] . ' ' . $patdata['lname'] . '</span></td>' .
+        '<td>DOB: <span style="font-weight: bold;">' . $patdata['DOB'] . '</span></td>' .
+        '<td>Date of Service: <span style="font-weight: bold;">' . $appointment['pc_eventDate'] . '</span></td>' .
+        '<td>Referring Physician: <span style="font-weight: bold;">Dr. ' . $referDoc['fname'] . ' ' . $referDoc['lname'] . '</span></td>' .
+		'</tr></table>';
 
         $html .="
 <table class='bordertbl' cellspacing='0' cellpadding='0' width='100%'>
