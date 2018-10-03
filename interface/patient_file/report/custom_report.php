@@ -160,7 +160,8 @@ function postToGet($arin)
     left:0px;
     top:0px;
     z-index:10;
-    border-bottom: solid thin #6D6D6D;
+    /* CMS-VT */
+    /* border-bottom: solid thin #6D6D6D; */
     padding:0% 2% 0% 2.5%;
   }
   img { max-width:700px; }
@@ -210,8 +211,9 @@ if ($printable) {
   /******************************************************************/
   // Setup Headers and Footers for mPDF only Download
   // in HTML view it's just one line at the top of page 1
-    echo '<page_header style="text-align:right;" class="custom-tag"> ' . xlt("PATIENT") . ':' . text($titleres['lname']) . ', ' . text($titleres['fname']) . ' - ' . $titleres['DOB_TS'] . '</page_header>    ';
-    echo '<page_footer style="text-align:right;" class="custom-tag">' . xlt('Generated on') . ' ' . text(oeFormatShortDate()) . ' - ' . text($facility['name']) . ' ' . text($facility['phone']) . '</page_footer>';
+    // CMS-VT
+    // echo '<page_header style="text-align:right;" class="custom-tag"> ' . xlt("PATIENT") . ':' . text($titleres['lname']) . ', ' . text($titleres['fname']) . ' - ' . $titleres['DOB_TS'] . '</page_header>    ';
+    // echo '<page_footer style="text-align:right;" class="custom-tag">' . xlt('Generated on') . ' ' . text(oeFormatShortDate()) . ' - ' . text($facility['name']) . ' ' . text($facility['phone']) . '</page_footer>';
 
     // Use logo if it exists as 'practice_logo.gif' in the site dir
     // old code used the global custom dir which is no longer a valid
@@ -235,8 +237,10 @@ if ($printable) {
 <?php echo $facility['city'] ?>, <?php echo $facility['state'] ?> <?php echo $facility['postal_code'] ?><br clear='all'>
 <?php echo $facility['phone'] ?><br>
 
-<a href="javascript:window.close();"><span class='title'><?php echo $titleres['fname'] . " " . $titleres['lname']; ?></span></a><br>
-<span class='text'><?php xl('Generated on', 'e'); ?>: <?php echo text(oeFormatShortDate()); ?></span>
+<!-- CMS-VT -->
+<a href="javascript:window.close();"><span class='title'><?php echo "Patient:  " . $titleres['fname'] . " " . $titleres['lname'] . "<br />" . "DOB:  " . $titleres['DOB_TS']; ?></span></a>
+<br>
+<!-- <span class='text'><?php xl('Generated on','e'); ?> <?php echo oeFormatShortDate(); ?></span> -->
 <?php echo "</td></tr></tbody></table></div>";?>
 
 <?php
@@ -608,7 +612,9 @@ foreach ($ar as $key => $val) {
                     $to_file = substr($from_file, 0, strrpos($from_file, '.')) . '_converted.jpg';
                 }
                 // adding support for .txt MDM-TXA interface/orders/receive_hl7_results.inc.php
-                if ($extension != (".pdf" || ".txt")) {
+                // CMS-VT
+                // if ($extension != (".pdf" || ".txt")) {
+                if ($extension != ".pdf" && $extension != ".txt") {
                     $image_data = getimagesize($from_file);
                     $extension = image_type_to_extension($image_data[2]);
                 }
@@ -655,11 +661,13 @@ foreach ($ar as $key => $val) {
                         ob_start();
 
                         echo "<div><div class='text documents'>\n";
-                    } elseif ($extension == ".txt") {
+                    }
+                    elseif ($extension == ".txt") {
                         echo "<pre>";
                         readfile($from_file);
                         echo "</pre>";
-                    } else {
+                    }
+                    else {
                         if (! is_file($to_file)) {
                             exec("convert -density 200 \"$from_file\" -append -resize 850 \"$to_file\"");
                         }
@@ -703,7 +711,8 @@ foreach ($ar as $key => $val) {
                 $prevIssueType = 'asdf1234!@#$'; // random junk so as to not match anything
                 $first_issue = 0;
                 echo "<hr />";
-                echo "<h1>".xl("Issues")."</h1>";
+                // CMS-VT
+                // echo "<h1>".xl("Issues")."</h1>";
             }
 
             preg_match('/^(.*)_(\d+)$/', $key, $res);
@@ -724,12 +733,13 @@ foreach ($ar as $key => $val) {
             // Show issue's chief diagnosis and its description:
             if ($diagnosis) {
                 echo "<div class='text issue_diag'>";
-                echo "<span class='bold'>[".xl('Diagnosis')."]</span><br>";
-                $dcodes = explode(";", $diagnosis);
-                foreach ($dcodes as $dcode) {
-                    echo "<span class='italic'>".$dcode."</span>: ";
-                    echo lookup_code_descriptions($dcode)."<br>\n";
-                }
+                // CMS-VT
+                //// echo "<span class='bold'>[".xl('Diagnosis')."]</span><br>";
+                // $dcodes = explode(";", $diagnosis);
+                // foreach ($dcodes as $dcode) {
+                    //// echo "<span class='italic'>".$dcode."</span>: ";
+                    //// echo lookup_code_descriptions($dcode)."<br>\n";
+                // }
 
                 //echo $diagnosis." -- ".lookup_code_descriptions($diagnosis)."\n";
                 echo "</div>";
@@ -763,19 +773,24 @@ foreach ($ar as $key => $val) {
                 $formId = getFormIdByFormdirAndFormid($res[1], $form_id);
 
                 if ($res[1] == 'newpatient') {
-                    echo "<div class='text encounter'>\n";
-                    echo "<h1>" . xl($formres["form_name"]) . "</h1>";
+                    // CMS-VT
+                    // echo "<div class='text encounter'>\n";
+                    // echo "<h1>" . xl($formres["form_name"]) . "</h1>";
                 } else {
                     echo "<div class='text encounter_form'>";
-                    echo "<h1>" . xl_form_title($formres["form_name"]) . "</h1>";
+                    // CMS-VT
+                    // echo "<h1>" . xl_form_title($formres["form_name"]) . "</h1>";
                 }
 
                 // show the encounter's date
-                echo "(" . oeFormatSDFT(strtotime($dateres["date"])) . ") ";
-                if ($res[1] == 'newpatient') {
+                // CMS-VT
+                echo "<span class='bold'>Date of Service: " . oeFormatSDFT(strtotime($dateres["date"])) . "</span>";
+                // echo "(" . oeFormatSDFT(strtotime($dateres["date"])) . ") ";
+                // CMS-VT
+                // if ($res[1] == 'newpatient') {
                     // display the provider info
-                    echo ' '. xl('Provider') . ': ' . text(getProviderName(getProviderIdOfEncounter($form_encounter)));
-                }
+                    //// echo ' '. xl('Provider') . ': ' . text(getProviderName(getProviderIdOfEncounter($form_encounter)));
+                // }
 
                 echo "<br>\n";
 
@@ -783,8 +798,18 @@ foreach ($ar as $key => $val) {
                 ?>
                 <div name="search_div" id="search_div_<?php echo attr($form_id)?>_<?php echo attr($res[1])?>" class="report_search_div class_<?php echo attr($res[1]); ?>">
                 <?php
-                if (substr($res[1], 0, 3) == 'LBF') {
+                // CMS-VT
+                // if (substr($res[1], 0, 3) == 'LBF') {
+                //     call_user_func("lbf_report", $pid, $form_encounter, $N, $form_id, $res[1]);
+                // } else {
+                //     call_user_func($res[1] . "_report", $pid, $form_encounter, $N, $form_id);
+                // }
+                if (substr($res[1],0,3) == 'LBF') {
                     call_user_func("lbf_report", $pid, $form_encounter, $N, $form_id, $res[1]);
+                } elseif ($res[1] == 'newpatient') {
+                    if ($_SESSION['site_id'] == '2500') {
+                        call_user_func($res[1] . "_report", $pid, $form_encounter, $N, $form_id);
+                    }
                 } else {
                     call_user_func($res[1] . "_report", $pid, $form_encounter, $N, $form_id);
                 }
@@ -823,9 +848,10 @@ foreach ($ar as $key => $val) {
     } // end if('include_')... else...
 } // end $ar loop
 
-if ($printable && ! $PDF_OUTPUT) {// Patched out of pdf 04/20/2017 sjpadgett
-    echo "<br /><br />" . xl('Signature') . ": _______________________________<br />";
-}
+// CMS-VT
+// if ($printable && ! $PDF_OUTPUT) {// Patched out of pdf 04/20/2017 sjpadgett
+    //// echo "<br /><br />" . xl('Signature') . ": _______________________________<br />";
+// }
 ?>
 
 </div> <!-- end of report_custom DIV -->
@@ -883,7 +909,6 @@ if ($PDF_OUTPUT) {
     }
 } else {
 ?>
-</body>
 <?php if (!$printable) { // Set up translated strings for use by interactive search ?>
 <script type="text/javascript">
 var xl_string = <?php echo json_encode(array(
@@ -896,5 +921,6 @@ var xl_string = <?php echo json_encode(array(
 </script>
 <script type="text/javascript" src="<?php echo $GLOBALS['web_root']?>/interface/patient_file/report/custom_report.js?v=<?php echo $v_js_includes; ?>"></script>
 <?php } ?>
+</body>
 </html>
 <?php } ?>
