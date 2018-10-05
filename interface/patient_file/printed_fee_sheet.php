@@ -392,9 +392,9 @@ foreach ($pid_list as $pid) {
 
         $html .= '<table style="width: 100%"><tr>' .
 		'<td>Patient: <span style="font-weight: bold;">' . $patdata['fname'] . ' ' . $patdata['mname'] . ' ' . $patdata['lname'] . '</span></td>' .
-        '<td>DOB: <span style="font-weight: bold;">' . $patdata['DOB'] . '</span></td>' .
-        '<td>Date of Service: <span style="font-weight: bold;">' . $appointment['pc_eventDate'] . '</span></td>' .
-        '<td>Referring Physician: <span style="font-weight: bold;">Dr. ' . $referDoc['fname'] . ' ' . $referDoc['lname'] . '</span></td>' .
+        '<td>DOB: <span style="font-weight: bold;">' . date("m-d-Y", $patdata['DOB']) . '</span></td>' .
+        '<td>Date of Service: <span style="font-weight: bold;">' . date("m-d-Y", $appointment['pc_eventDate']) . '</span></td>' .
+        '<td>Refer Doctor: <span style="font-weight: bold;">Dr. ' . $referDoc['fname'] . ' ' . $referDoc['lname'] . '</span></td>' .
 		'</tr></table>';
 
         $html .="
@@ -426,15 +426,19 @@ foreach ($pid_list as $pid) {
             $html .= "</td>
 <td valign='top' class='fshead'>";
             $html .= xl('DOB', 'r');
-            $html .= ":<br />";
+            // CMS-VT
+            $html .= ": ";
+            // $html .= ":<br />";
 
             if ($form_fill) {
-                $html .= $patdata['DOB'];
+                $html .= date("m-d-Y", $patdata['DOB']);
                 $html .= "<br />";
             }
 
             $html .= xl('ID', 'r');
-            $html .= ":<br />";
+            // CMS-VT
+            $html .= ": ";
+            // $html .= ":<br />";
 
             if ($form_fill) {
                 $html .= $patdata['pubpid'];
@@ -445,7 +449,9 @@ foreach ($pid_list as $pid) {
 <tr>
 <td colspan='3' valign='top' class='fshead' style='height:${lheight}pt'>";
             $html .= xl('Doctor', 'r');
-            $html .= ":<br />";
+            // CMS-VT
+            $html .= ": ";
+            // $html .= ":<br />";
 
 
             $encdata = false;
@@ -520,7 +526,7 @@ foreach ($pid_list as $pid) {
                 if (!empty($encdata)) {
                     $html .= substr($encdata['date'], 0, 10);
                 } else {
-                    $html .= text(oeFormatShortDate(date('Y-m-d'))) . "\n";
+                    $html .= text(oeFormatShortDate(date('m-d-Y'))) . "\n";
                 }
             }
 
