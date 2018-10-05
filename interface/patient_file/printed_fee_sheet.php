@@ -394,7 +394,7 @@ foreach ($pid_list as $pid) {
 		'<td>Patient: <span style="font-weight: bold;">' . $patdata['fname'] . ' ' . $patdata['mname'] . ' ' . $patdata['lname'] . '</span></td>' .
         '<td>DOB: <span style="font-weight: bold;">' . date("m-d-Y", $patdata['DOB']) . '</span></td>' .
         '<td>Date of Service: <span style="font-weight: bold;">' . date("m-d-Y", $appointment['pc_eventDate']) . '</span></td>' .
-        '<td>Refer Doctor: <span style="font-weight: bold;">Dr. ' . $referDoc['fname'] . ' ' . $referDoc['lname'] . '</span></td>' .
+        '<td>Ref Prov: <span style="font-weight: bold;">' . $referDoc['fname'] . ' ' . $referDoc['lname'] . '</span></td>' .
 		'</tr></table>';
 
         $html .="
